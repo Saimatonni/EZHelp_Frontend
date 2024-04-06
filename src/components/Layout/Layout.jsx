@@ -1,17 +1,21 @@
-import React from 'react'
-import Header from '../Header/Header'
-import Footer from '../Footer/Footer'
-// import Routers from '../router/Routers'
-import Routers from '../../router/Routers'
+import React from "react";
+import { useLocation } from "react-router-dom";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
+import Routers from "../../router/Routers";
 
 const Layout = () => {
-    return (
-        <>
-             <Header />
-             <Routers />
-             <Footer />
-        </>
-    )
-}
+  const location = useLocation();
+  const hideHeaderFooterRoutes = ["/login-client", "/login-sp"];
+  const hideHeaderFooter = hideHeaderFooterRoutes.includes(location.pathname);
 
-export default Layout
+  return (
+    <>
+      {!hideHeaderFooter && <Header />}
+      <Routers />
+      {!hideHeaderFooter && <Footer />}
+    </>
+  );
+};
+
+export default Layout;

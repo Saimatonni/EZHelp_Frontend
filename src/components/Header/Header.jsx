@@ -3,15 +3,25 @@ import Logo from "./Logo";
 import PcNavigation from "./PcNavigation";
 import { useLocation } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
+  const handleServiceProviderClick = () => {
+    navigate("/login-sp");
+  };
+
+  const handleClientClick = () => {
+    navigate("/login-client");
+  };
+
 
   return (
     <header
@@ -34,10 +44,16 @@ const Header = () => {
             </span>
             {showDropdown && (
               <div className="absolute top-full mt-1 left-0 bg-black rounded-lg shadow-md p-1">
-                <button className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800">
+                <button
+                  className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800"
+                  onClick={handleServiceProviderClick}
+                >
                   Service Provider
                 </button>
-                <button className="block w-full text-white text-sm text-left py-1 px-2 hover:bg-blue-800">
+                <button
+                  className="block w-full text-white text-sm text-left py-1 px-2 hover:bg-blue-800"
+                  onClick={handleClientClick}
+                >
                   Client
                 </button>
               </div>
@@ -50,8 +66,3 @@ const Header = () => {
 };
 
 export default Header;
-
-
-
-
-
