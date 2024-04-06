@@ -1,78 +1,57 @@
-import React, {useRef, useEffect } from 'react'
-import { container, Row, Button, Container } from 'reactstrap'
-import { NavLink, Link } from 'react-router-dom'
-import './Header.css'
-
-
-const nav_Link = [
-  {
-    path: '/',
-    display: 'Home'
-  },
-  {
-    path: '/about',
-    display: 'About'
-  },
-  {
-    path: '/others',
-    display: 'others'
-  }
-]
+import React, { useState } from "react";
+import Logo from "./Logo";
+import PcNavigation from "./PcNavigation";
+import { useLocation } from "react-router-dom";
+import { IoIosArrowDown } from "react-icons/io";
 
 const Header = () => {
-  const headerRef = useRef(null)
-  const stickyHeaderFunc = () =>{
-    window.addEventListener('scroll',()=>{
-      if(document.body.scrollTop>80 || document.documentElement.scrollTop>80){
-        headerRef.current.classList.add('sticky__header')
-      }else{
-        headerRef.current.classList.remove('sticky__header')
-      }
-    })
-  }
-  useEffect(()=>{
-   stickyHeaderFunc()
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+  const [showDropdown, setShowDropdown] = useState(false);
 
-   return window.removeEventListener('scroll', stickyHeaderFunc)
-  })
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   return (
-    <header className="Header" ref={headerRef}>
-       <Container>
-        <Row>
-          <div className='nav_wrapper d-flex align-item-center justify-content-between'>
-            <div className="logo">
-              <img src="" alt="logo" />
-            </div>
-
-            <div className="navigation">
-             <ul className='menu d-flex align-item-center gap-5'>
-              {
-               nav_Link.map((item, index)=>(
-                <li className='nav_item' key={index}>
-                   <NavLink to={item.path} className={navClass=> navClass
-                   .isActive? 'active__link' : ""}>
-                    {item.display}
-                    </NavLink>
-                </li>
-               ))
-              }
-             </ul>
-            </div>
-            <div className='nav_right d-flex align-items-center gap-4'> 
-             <div className='nav_btns d-flex align-items-center gap-4'>
-                <Button className='btn secondary__btn'><Link to='/login'>Login</Link></Button>
-                <Button className='btn primary__btn'><Link to='/register'>Register</Link></Button>
-             </div>
-             <span className="mobile_menu">
-              <i class="ri-menu-line"></i>
-             </span>
-            </div>
+    <header
+      className={`w-full h-20 md:h-24 flex justify-between items-center duration-300 font-brand__font_family__regular ${
+        isHomePage
+          ? "bg-transparent absolute top-0 left-0 right-0 lg:h-28"
+          : "bg-white lg:h-24 shadow sticky top-0 z-50"
+      }`}
+    >
+      <div className="max-w-screen-xl mx-auto w-full z-50 text-brand__white p-content__padding">
+        <div className="flex justify-between items-center">
+          <Logo />
+          <PcNavigation />
+          <div className="relative">
+            <span
+              className="bg-black text-white py-1 px-4 rounded-md mr-1 cursor-pointer"
+              onClick={toggleDropdown}
+            >
+              Join As <IoIosArrowDown className="inline-block ml-1" />
+            </span>
+            {showDropdown && (
+              <div className="absolute top-full mt-1 left-0 bg-black rounded-lg shadow-md p-1">
+                <button className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800">
+                  Service Provider
+                </button>
+                <button className="block w-full text-white text-sm text-left py-1 px-2 hover:bg-blue-800">
+                  Client
+                </button>
+              </div>
+            )}
           </div>
-        </Row>
-      </Container> 
-      
-      </header>
-  )
-}
+        </div>
+      </div>
+    </header>
+  );
+};
 
-export default Header
+export default Header;
+
+
+
+
+

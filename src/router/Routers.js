@@ -1,20 +1,18 @@
 import React from 'react'
 import {Routes, Route, Navigate} from 'react-router-dom'
 import Home from '../Pages/Home'
-import Login from '../Pages/Login'
-import Reagister from '../Pages/Reagister'
-import SearchResultList from '../Pages/SearchResultList'
-import ThankYou from '../Pages/ThankYou'
+import ContactUsScreen from '../Pages/contact-us'
+import AvailableJobs from '../Pages/available-job'
+import ServiceProviders from '../Pages/service-providers'
 
 const Routers = () => {
   return (
     <Routes>
        <Route path ='/' element={<Navigate to = '/home' />}/>
        <Route path='/home' element={<Home/>}/>
-       <Route path='/login' element={<Login/>}/>
-       <Route path='/register' element={<Reagister/>}/>
-       <Route path='/thank-you' element={<ThankYou/>}/>
-       <Route path='/tours/search' element={<SearchResultList/>}/>
+       <Route path='/contact-us' element={<ContactUsScreen/>}/>
+       <Route path='/available-jobs' element={<AvailableJobs/>}/>
+       <Route path='/service-providers' element={<ServiceProviders/>}/>
     </Routes>
   )
 }

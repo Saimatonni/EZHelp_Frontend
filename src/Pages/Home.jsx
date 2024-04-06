@@ -1,62 +1,51 @@
-import React from 'react'
-import '../styles/home.css'
-import { container, Row, Col, Container } from 'reactstrap';
-import Subtitle from '../shared/Subtitle';
-import SearchBar from '../shared/SearchBar';
+import { lazy, Suspense, useEffect, useState } from "react";
+import Spinner from "../components/common/Spinner";
+import AskQuestion from "../components/home/AskQuestion";
+import Testimonial from "../components/home/testimonial";
+import Banner from "../components/home/banner";
+import EmergencyNeeded from "../components/home/emergencyNeeded";
+import Faq from "../components/home/questions";
 
 const Home = () => {
+
+
+
   return (
-    <>
-      <section className='max-w-screen-xl mx-auto p-content__padding'>
-        <Container>
-          <Row>
-            <Col lg='6'>
-            <div className="text-4xl font-bold text-blue-500">
-                Hello
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+    <div>
+       <Suspense
+        fallback={
+          <Spinner className="h-screen flex flex-col justify-center items-center" />
+        }
+      >
+        <Banner />
+      </Suspense>
 
-      <section>
-        <Container>
-          <Row>
-            <Col lg='12' className='mb-5'>
+      <Suspense
+        fallback={
+          <Spinner className="h-screen flex flex-col justify-center items-center" />
+        }
+      >
+        <EmergencyNeeded />
+      </Suspense>
+      
+      <Suspense
+        fallback={
+          <Spinner className="h-screen flex flex-col justify-center items-center" />
+        }
+      >
+        <Faq />
+      </Suspense>
 
 
-            </Col>
-          </Row>
-        </Container>
-      </section>
+      <Suspense
+        fallback={
+          <Spinner className="h-screen flex flex-col justify-center items-center" />
+        }
+      >
+        <Testimonial />
+      </Suspense>
+    </div>
+  );
+};
 
-      <section>
-        <Container>
-          <Row>
-            <Col lg='6'>
-              
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      <section>
-        <Container>
-          <Row>
-
-          </Row>
-        </Container>
-      </section>
-
-      <section>
-        <Container>
-          <Row>
-
-          </Row>
-        </Container>
-      </section>
-    </>
-  )
-}
-
-export default Home
+export default Home;
