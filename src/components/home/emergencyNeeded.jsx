@@ -8,7 +8,7 @@ const EmergencyNeeded = () => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
   
     return (
-      <section className="pb-2 bg-center bg-cover bg-fixed relative mt-20">
+      <section className="pb-2 bg-center bg-cover bg-fixed relative">
         <div className="max-w-screen-xl mx-auto relative">
           <div className="py-5 lg:py-10 w-full text-black text-left">
             <h2 className="text-brand__font__size__xl font-brand__font__bold font-brand__font__family__fancy leading-tight">

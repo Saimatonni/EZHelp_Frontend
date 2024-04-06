@@ -4,6 +4,7 @@ import Home from '../Pages/Home'
 import ContactUsScreen from '../Pages/contact-us'
 import AvailableJobs from '../Pages/available-job'
 import ServiceProviders from '../Pages/service-providers'
+import JobDetails from '../Pages/job-details'
 
 const Routers = () => {
   return (
@@ -13,6 +14,7 @@ const Routers = () => {
        <Route path='/contact-us' element={<ContactUsScreen/>}/>
        <Route path='/available-jobs' element={<AvailableJobs/>}/>
        <Route path='/service-providers' element={<ServiceProviders/>}/>
+       <Route path='/job-details/:id' element={<JobDetails/>}/>
     </Routes>
   )
 }

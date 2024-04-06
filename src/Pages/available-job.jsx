@@ -10,8 +10,12 @@ import {
   Button,
 } from "reactstrap";
 import data from "../components/home/data";
+import { useNavigate } from "react-router-dom";
+
 
 const AvailableJobs = () => {
+  const navigate = useNavigate();
+
   return (
     <div
       className="h-full flex flex-col justify-center py-10 bg-cover bg-center bg-no-repeat"
@@ -36,6 +40,7 @@ const AvailableJobs = () => {
                         height: "40px",
                         width: "120px",
                       }}
+                      onClick={() => navigate(`/job-details/${job.id}`)}
                     >
                       Bid Now
                     </Button>
