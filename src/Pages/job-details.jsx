@@ -11,15 +11,53 @@ import {
   Button,
 } from "reactstrap";
 
+import {
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+
 const JobDetails = () => {
   const { id } = useParams();
 
   const [job, setJob] = useState(null);
 
+  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+
+  useEffect(() => {
+    const selectedJob = data.find((job) => job.id === parseInt(id));
+    setJob(selectedJob);
+    if (selectedJob) {
+      setCoordinates({
+        lat: selectedJob.GPSCoordinates.latitude,
+        lng: selectedJob.GPSCoordinates.longitude,
+      });
+    }
+  }, [id]);
+
+  console.log("co",coordinates)
+
+  const mapStyles = {
+    width: "100%",
+    height: "400px",
+  };
+
+  const defaultCenter = {
+    lat: 23.777176,
+    lng: 90.399452,
+  };
+
   useEffect(() => {
     const selectedJob = data.find((job) => job.id === parseInt(id));
     setJob(selectedJob);
   }, [id]);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyB1GNLedehoDsSDG3f-cf2XCHxiUtIz6bg",
+    libraries: ["places"],
+  });
+  
 
   if (!job) {
     return <div>Loading...</div>;
@@ -30,13 +68,17 @@ const JobDetails = () => {
       <div className="max-w-screen-xl w-full mx-auto p-content__padding flex flex-col justify-center items-center">
         <div className="w-full h-[400px] border group relative rounded-tl-md rounded-tr-md">
           <div className="absolute group-hover:bg-opacity-0 duration-300 top-0 left-0 right-0 bottom-0 w-full h-full bg-black bg-opacity-50 group-hover:invisible rounded-tl-md rounded-tr-md"></div>
-          <iframe
-            className="w-full h-full rounded-tl-md rounded-tr-md"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.041193892314!2d90.39749967600932!3d23.78154738757875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c769c6633a2f%3A0xbb3979a7e02a8c90!2sBrain%20Station%2023!5e0!3m2!1sen!2sbd!4v1695626580145!5m2!1sen!2sbd"
-            // src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.041193892314!2d90.39749967600932!3d23.78154738757875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c156c9c1ec29%3A0x9138baf2b5395bf5!2sInsignia%20Tours%20and%20Travel!5e0!3m2!1sen!2sbd!4v1695626580145!5m2!1sen!2sbd&id=${id}`}
-            allowfullscreen=""
-            loading="lazy"
-          />
+           {isLoaded && (
+            <GoogleMap
+              mapContainerStyle={mapStyles}
+              zoom={10}
+              center={defaultCenter}
+            >
+              {coordinates.lat !== 0 && coordinates.lng !== 0 && (
+                <Marker position={{ lat: coordinates.lat, lng: coordinates.lng }} />
+              )}
+            </GoogleMap>
+          )}
         </div>
       </div>
       <div className="mt-4 px-28 ml-5 mr-5">

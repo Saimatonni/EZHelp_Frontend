@@ -7,6 +7,7 @@ import ServiceProviders from '../Pages/service-providers'
 import JobDetails from '../Pages/job-details'
 import LoginClient from '../Pages/login-client'
 import LoginSP from '../Pages/login-sp'
+import CreateJob from '../Pages/create-job'
 
 const Routers = () => {
   return (
@@ -19,6 +20,7 @@ const Routers = () => {
        <Route path='/job-details/:id' element={<JobDetails/>}/>
        <Route path='login-sp' element={<LoginSP/>}/>
        <Route path='login-client' element={<LoginClient/>}/>
+       <Route path='create-job' element={<CreateJob/>}/>
     </Routes>
   )
 }
