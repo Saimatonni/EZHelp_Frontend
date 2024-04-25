@@ -1,0 +1,88 @@
+.login-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    object-position: top;
+    
+  }
+  
+  .left-half {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    height: 100%; /* Fill the entire height of the login container */
+}
+
+.left-half img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire container */
+    object-position: left;
+   
+}
+
+  .right-half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .logo-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .signin-text {
+    text-align: center;
+    margin-bottom: 80px;
+    font-weight: bold;
+  }
+  
+  .signin-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .client-signin {
+    text-decoration: underline; /* Underline the text */
+    font-weight: bold;
+    color: inherit; /* Inherit the text color */
+    cursor: pointer; /* Change cursor to indicate interactivity */
+  }
+  
+  .client-signin:hover {
+    color: blue; /* Change text color to blue on hover */
+  }
+  
+  .or-text{
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+
+  .google-signin {
+    background-color: #ffffff;
+    border: 1px solid #000000; /* Black border */
+    border-radius: 20px; /* Adjust border-radius to control the roundness of corners */
+    padding: 10px 20px;
+    cursor: pointer;
+    display: flex;
+    font-weight: bold;
+    align-items: center;/* Align items vertically in center */
+  }
+  
+  .google-signin-content {
+    display: flex;
+    align-items: center; /* Align items vertically in center */
+  }
+  
+  .google-signin img {
+    width: 24px; 
+    height: 24px; 
+    margin-right: 10px; 
+  }
+  
