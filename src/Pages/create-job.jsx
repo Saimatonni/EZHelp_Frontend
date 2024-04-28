@@ -205,25 +205,22 @@ const CreateJob = () => {
           </Row>
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item
-                label="Open"
-                name="open"
+            <Form.Item
+                label="Start Date"
+                name="startDate"
                 rules={[
-                  { required: true, message: "Please select open option" },
+                  { required: true, message: "Please select Start date" },
                 ]}
               >
-                <Select placeholder="Select open">
-                  <Select.Option value="Yes">Yes</Select.Option>
-                  <Select.Option value="No">No</Select.Option>
-                </Select>
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Posted Date"
-                name="postedDate"
+                label="End Date"
+                name="endDate"
                 rules={[
-                  { required: true, message: "Please select posted date" },
+                  { required: true, message: "Please select End date" },
                 ]}
               >
                 <DatePicker style={{ width: "100%" }} />

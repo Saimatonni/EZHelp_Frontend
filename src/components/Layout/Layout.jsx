@@ -6,7 +6,7 @@ import Routers from "../../router/Routers";
 
 const Layout = () => {
   const location = useLocation();
-  const hideHeaderFooterRoutes = ["/login-client", "/login-sp"];
+  const hideHeaderFooterRoutes = ["/login-client", "/login-sp","/signup-client","/signup-sp"];
   const hideHeaderFooter = hideHeaderFooterRoutes.includes(location.pathname);
 
   return (

@@ -1,25 +1,50 @@
-import React, { useState } from "react";
-import Logo from "./Logo";
-import PcNavigation from "./PcNavigation";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import Logo from "./Logo";
+import PcNavigation from "./PcNavigation";
+import clientProfile from "../../assets/images/profile/user.png";
+import spProfile from "../../assets/images/profile/profile.png";
 
 const Header = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const [showDropdown, setShowDropdown] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if role is stored in cookies
+    const role = Cookies.get("role");
+    setUserRole(role);
+  }, []);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
+
   const handleServiceProviderClick = () => {
     navigate("/login-sp");
   };
 
   const handleClientClick = () => {
     navigate("/login-client");
+  };
+
+  const handleLogout = () => {
+    Cookies.remove("role");
+    navigate("/")
+    setUserRole(null);
+  };
+
+  const handleProfileClick = () => {
+    if (userRole === "serviceprovider") {
+      navigate("/sp-profile");
+    } else if (userRole === "client") {
+      navigate("/client-profile");
+    }
   };
 
 
@@ -35,30 +60,57 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <Logo />
           <PcNavigation />
-          <div className="relative">
-            <span
-              className="bg-black text-white py-1 px-4 rounded-md mr-1 cursor-pointer"
-              onClick={toggleDropdown}
-            >
-              Join As <IoIosArrowDown className="inline-block ml-1" />
-            </span>
-            {showDropdown && (
-              <div className="absolute top-full mt-1 left-0 bg-black rounded-lg shadow-md p-1">
-                <button
-                  className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800"
-                  onClick={handleServiceProviderClick}
-                >
-                  Service Provider
-                </button>
-                <button
-                  className="block w-full text-white text-sm text-left py-1 px-2 hover:bg-blue-800"
-                  onClick={handleClientClick}
-                >
-                  Client
-                </button>
-              </div>
-            )}
-          </div>
+          {userRole ? (
+            <div className="relative">
+              <img
+                src={userRole === "serviceprovider" ? spProfile : clientProfile}
+                alt="User Profile"
+                className="w-8 h-8 rounded-full cursor-pointer"
+                onClick={toggleDropdown}
+              />
+              {showDropdown && (
+                <div className="absolute top-full mt-1 right-0 bg-black rounded-lg shadow-md p-1">
+                  <button
+                    className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800"
+                    onClick={handleProfileClick}
+                  >
+                    Profile
+                  </button>
+                  <button
+                    className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="relative">
+              <span
+                className="bg-black text-white py-1 px-4 rounded-md mr-1 cursor-pointer"
+                onClick={toggleDropdown}
+              >
+                Join As <IoIosArrowDown className="inline-block ml-1" />
+              </span>
+              {showDropdown && (
+                <div className="absolute top-full mt-1 left-0 bg-black rounded-lg shadow-md p-1">
+                  <button
+                    className="block w-full text-white text-left text-sm py-1 px-2 hover:bg-blue-800"
+                    onClick={handleServiceProviderClick}
+                  >
+                    Service Provider
+                  </button>
+                  <button
+                    className="block w-full text-white text-sm text-left py-1 px-2 hover:bg-blue-800"
+                    onClick={handleClientClick}
+                  >
+                    Client
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

@@ -8,6 +8,10 @@ import JobDetails from '../Pages/job-details'
 import LoginClient from '../Pages/login-client'
 import LoginSP from '../Pages/login-sp'
 import CreateJob from '../Pages/create-job'
+import SignupClient from '../Pages/signup-client'
+import SignupSP from '../Pages/signup-sp'
+import ClientProfile from '../Pages/client-profile'
+import SPprofile from '../Pages/sp-profile'
 
 const Routers = () => {
   return (
@@ -18,9 +22,13 @@ const Routers = () => {
        <Route path='/available-jobs' element={<AvailableJobs/>}/>
        <Route path='/service-providers' element={<ServiceProviders/>}/>
        <Route path='/job-details/:id' element={<JobDetails/>}/>
-       <Route path='login-sp' element={<LoginSP/>}/>
-       <Route path='login-client' element={<LoginClient/>}/>
-       <Route path='create-job' element={<CreateJob/>}/>
+       <Route path='/login-sp' element={<LoginSP/>}/>
+       <Route path='/login-client' element={<LoginClient/>}/>
+       <Route path='/signup-sp' element={<SignupSP/>}/>
+       <Route path='/signup-client' element={<SignupClient/>}/>
+       <Route path='/create-job' element={<CreateJob/>}/>
+       <Route path='/client-profile' element={<ClientProfile/>}/>
+       <Route path='/sp-profile' element={<SPprofile/>}/>
     </Routes>
   )
 }
