@@ -1,0 +1,79 @@
+.container {
+    display: flex;
+    padding: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .image-container {
+    margin-right: 20px; /* Adjust spacing between image and text */
+  }
+  
+  .circular-image {
+    width: 125px; /* Adjust image size as needed */
+    height: 125px;
+    border-radius: 50%; /* Make the image circular */
+    margin-bottom: 10px;
+  }
+
+  .text-ok{
+    margin-left: 10px; /* Adjust the spacing between image and text */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    text-align: center;
+  }
+
+  .text-ok p {
+    font-size: 10pt;
+    margin: 2px 0; /* Adjust the top and bottom margin */
+  }
+
+  .spacing{
+    margin-bottom: 50px;
+    font-weight: 700;
+  }
+  
+  
+  .list-container{
+    margin-left: 200px;
+    margin-right: 200px;
+    margin-top: 40px;
+    align-items: start;
+    justify-content: flex-start;
+    display: flexbox;
+  }
+
+  .list-services{
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    border: 2px solid rgba(21, 6, 51, 0.473);
+    padding: 10px;
+  }
+  .heading-style{
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .text-container {
+    display: flex;
+    margin-left: 200px;
+    width: 500px;
+    flex-direction: column; /* Stack text fields vertically */
+  }
+  
+  .text-field {
+    margin-bottom: 10px; /* Adjust spacing between text fields */
+    padding: 8px; /* Add padding for better appearance */
+  }
+
+  .id-style{
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: flexbox;
+    align-content: center;
+    margin-right: 40px;
+    margin-left: 20px;
+  }
+  
