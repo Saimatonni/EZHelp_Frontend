@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, notification } from 'antd';
 import '../styles/loginclient_style.css';
 import leftbg from "../assets/images/background/client_login.png";
 import logo from "../assets/images/brand/logo.jpg";
 import googlelogo from "../assets/images/brand/google_logo.png";
 import Cookies from 'js-cookie'; 
+import { BASE_URL } from '../utils/config';
 
 const SignupClient = () => {
   const navigate = useNavigate();
@@ -18,9 +19,43 @@ const SignupClient = () => {
     navigate('/login-client');
   };
 
-  const handleSignUp = (values) => {
-    Cookies.set("role", "client"); 
-    navigate('/');
+  const handleSignUp = async (values) => {
+    try {
+      const response = await fetch(`${BASE_URL}/clients/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          phone_number: values.phone_number,
+          password: values.password,
+          role: 'client',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate('/login-client');
+        notification.success({
+          message: 'Registration Successful',
+          description: data.message,
+        });
+      } else {
+        notification.error({
+          message: 'Registration Failed',
+          description: 'An error occurred while registering. Please try again later.',
+        });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      notification.error({
+        message: 'Registration Failed',
+        description: 'An error occurred while registering. Please try again later.',
+      });
+    }
   };
 
   return (

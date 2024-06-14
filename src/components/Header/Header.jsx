@@ -7,18 +7,59 @@ import Logo from "./Logo";
 import PcNavigation from "./PcNavigation";
 import clientProfile from "../../assets/images/profile/user.png";
 import spProfile from "../../assets/images/profile/profile.png";
+import { BASE_URL } from "../../utils/config";
 
 const Header = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const [showDropdown, setShowDropdown] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [profileImage, setProfileImage] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if role is stored in cookies
+   
     const role = Cookies.get("role");
     setUserRole(role);
+    if (role === "serviceprovider") {
+      const spId = Cookies.get("userid");
+      const accesstoken = Cookies.get("access_token");
+      if (spId) {
+        fetch(`${BASE_URL}/service-providers/${spId}`, {
+          headers: {
+            "access-token": accesstoken
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message === "Service provider details retrieved successfully") {
+              setProfileImage(data.data.image);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching service provider profile:", error);
+          });
+      }
+    } else if (role === "client") {
+      const clientId = Cookies.get("userid");
+      const accesstoken = Cookies.get("access_token");
+      if (clientId) {
+        fetch(`${BASE_URL}/clients/${clientId}`, {
+          headers: {
+            "access-token": accesstoken
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message === "Client details retrieved successfully") {
+              setProfileImage(data.data.image);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching client profile:", error);
+          });
+      }
+    }
   }, []);
 
   const toggleDropdown = () => {
@@ -35,6 +76,8 @@ const Header = () => {
 
   const handleLogout = () => {
     Cookies.remove("role");
+    Cookies.remove("access_token");
+    Cookies.remove("userid");
     navigate("/")
     setUserRole(null);
   };
@@ -63,7 +106,7 @@ const Header = () => {
           {userRole ? (
             <div className="relative">
               <img
-                src={userRole === "serviceprovider" ? spProfile : clientProfile}
+                src={profileImage || (userRole === "serviceprovider" ? spProfile : clientProfile)}
                 alt="User Profile"
                 className="w-8 h-8 rounded-full cursor-pointer"
                 onClick={toggleDropdown}

@@ -6,17 +6,60 @@ import { useState } from "react";
 import { Spinner } from "reactstrap";
 import { useForm } from "react-hook-form";
 import gradientbg from "../../assets/images/banner/vector2.png";
+import Cookies from 'js-cookie'; 
+import { Form, Button ,notification} from 'antd';
+import { BASE_URL } from "../../utils/config";
 
 
 const AskQuestion = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
+    handleSubmit,
+    formState: { errors },
   } = useForm();
   
+  const onSubmit = async (formData) => {
+    try {
+      setIsLoading(true);
 
-  const onSubmit = async () => {
-   
+      const client_id = Cookies.get('userid');
+
+      const response = await fetch(`${BASE_URL}/faqs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: client_id || '',
+          name: formData.name,
+          contact: formData.emailOrPhone,
+          question: formData.questionText
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        notification.success({
+          message: 'Success',
+          description: 'Your message has been submitted successfully!'
+        });
+        setIsLoading(false);
+      } else {
+        notification.error({
+          message: 'Error',
+          description: 'Failed to submit your message. Please try again later.'
+        });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      notification.error({
+        message: 'Error',
+        description: 'An error occurred while submitting your message. Please try again later.'
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,7 +74,7 @@ const AskQuestion = () => {
       </div>
 
       <div>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="font-brand__font__semibold text-black">
             <div className="relative text-gray-600">
               <input

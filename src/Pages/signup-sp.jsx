@@ -1,11 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Row, Col } from 'antd';
+import { Form, Input, Button, Row, Col ,notification} from 'antd';
 import '../styles/loginclient_style.css';
 import leftbg from "../assets/images/background/sp_image.png";
 import logo from "../assets/images/brand/logo.jpg";
-import googlelogo from "../assets/images/brand/google_logo.png";
-import Cookies from 'js-cookie'; 
+import { BASE_URL } from '../utils/config';
 
 const SignupSP = () => {
   const navigate = useNavigate();
@@ -18,9 +17,47 @@ const SignupSP = () => {
     navigate('/login-sp');
   };
 
-  const handleSignUp = (values) => {
-    Cookies.set("role", "serviceprovider"); 
-    navigate('/');
+  const handleSignUp = async (values) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: values.name,
+        work_type: values.work_type,
+        pay_per_hour: parseInt(values.pay_per_hour),
+        experience: parseInt(values.experience),
+        email: values.email,
+        phone_number: values.phone_number,
+        nid_number: values.nid_number,
+        role: 'serviceprovider',
+        password: values.password
+      })
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/service-providers/register`, requestOptions);
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Registration successful:', data);
+        notification.success({
+          message: 'Registration Successful',
+          description: 'You have successfully registered as a service provider.'
+        });
+        navigate('/login-sp');
+      } else {
+        console.error('Registration failed:', data.message);
+        notification.error({
+          message: 'Registration Failed',
+          description: data.message || 'Something went wrong. Please try again later.'
+        });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      notification.error({
+        message: 'Registration Error',
+        description: 'Failed to register. Please check your network connection and try again.'
+      });
+    }
   };
 
   return (
@@ -131,17 +168,6 @@ const SignupSP = () => {
             </Form.Item>
           </Form>
         </div>
-        {/* <div className="or-text">
-          or
-        </div>
-        <div className="signin-options">
-          <button className="google-signin">
-            <div className="google-signin-content">
-              <img src={googlelogo} alt="Google logo" />
-              <span>Sign Up with Google</span>
-            </div>
-          </button>
-        </div> */}
         <div className="signup-option text-center mt-4">
           <p className="text-gray-500">Already have an account? <span onClick={handleSignIn} className="text-blue-500 cursor-pointer hover:underline">Sign In</span></p>
         </div>

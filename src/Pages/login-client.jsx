@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button ,notification} from 'antd';
 import '../styles/loginclient_style.css';
 import leftbg from "../assets/images/background/client_login.png";
 import logo from "../assets/images/brand/logo.jpg";
 import googlelogo from "../assets/images/brand/google_logo.png";
 import Cookies from 'js-cookie'; 
+import { BASE_URL } from '../utils/config';
 
 const LoginClient = () => {
   const navigate = useNavigate();
@@ -15,11 +16,45 @@ const LoginClient = () => {
     navigate('/');
   };
 
-  const handleSignIn = (values) => {
-    Cookies.set("role", "client"); 
-    navigate('/');
-  };
+  const handleSignIn = async (values) => {
+    try {
+      const response = await fetch(`${BASE_URL}/clients/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role: 'client',
+          email: values.username, 
+          password: values.password,
+        }),
+      });
 
+      const data = await response.json();
+
+      if (response.ok) {
+        Cookies.set("role", "client");
+        Cookies.set("access_token", data.access_token);
+        Cookies.set("userid", data.client_id); 
+        navigate('/');
+        notification.success({
+          message: 'Login Successful',
+          description: data.message,
+        });
+      } else {
+        notification.error({
+          message: 'Login Failed',
+          description: 'An error occurred while logging in. Please try again later.',
+        });
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      notification.error({
+        message: 'Login Failed',
+        description: 'An error occurred while logging in. Please try again later.',
+      });
+    }
+  };
   const handleSignUp = () => {
     navigate('/signup-client');
   };
@@ -44,7 +79,7 @@ const LoginClient = () => {
               onFinish={handleSignIn}
             >
               <Form.Item
-                label="Username"
+                label="Email"
                 name="username"
                 rules={[{ required: true, message: 'Please input your username!' }]}
               >
