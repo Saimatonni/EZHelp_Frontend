@@ -14,6 +14,9 @@ import {
   Radio,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { BASE_URL } from "../utils/config";
+import moment from "moment";
+import Cookies from "js-cookie";
 
 import {
   Card,
@@ -38,6 +41,7 @@ const CreateJob = () => {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [placeName, setPlaceName] = useState("");
   const [searchValue, setSearchValue] = useState("");
+  const [imageBase64, setImageBase64] = useState("");
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: "AIzaSyB1GNLedehoDsSDG3f-cf2XCHxiUtIz6bg",
@@ -105,6 +109,61 @@ const CreateJob = () => {
     setSearchValue(place.formatted_address);
   };
 
+  const handleImageUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageBase64(reader.result.split(",")[1]);
+    };
+    reader.readAsDataURL(file);
+    return false;
+  };
+
+  const handleFormSubmit = async (values) => {
+    const accesstoken = Cookies.get("access_token");
+    const payload = {
+      userId: Cookies.get("userid"),
+      workType: values.workType,
+      address: placeName,
+      GPSCoordinates: {
+        latitude: coordinates.lat,
+        longitude: coordinates.lng,
+      },
+      emergency: values.emergency === "Yes",
+      open: true,
+      payAmount: values.payAmount,
+      shortTitle: values.shortTitle,
+      description: values.description,
+      images: [imageBase64],
+      startDate: moment(values.startDate).format("DD-MM-YYYY"),
+      endDate: moment(values.endDate).format("DD-MM-YYYY"),
+      bidded_sp_ids: [],
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/jobs/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "access-token": accesstoken
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        notification.success({ message: "Job created successfully!" });
+        form.resetFields();
+        setCoordinates({ lat: 0, lng: 0 });
+        setPlaceName("");
+        setSearchValue("");
+        setImageBase64("");
+      } else {
+        notification.error({ message: "Failed to create job" });
+      }
+    } catch (error) {
+      notification.error({ message: "An error occurred" });
+    }
+  };
+
   return (
     <div
       className="h-full flex flex-col justify-center py-10 bg-cover bg-center bg-no-repeat"
@@ -164,7 +223,7 @@ const CreateJob = () => {
       </div>
       <div className="max-w-screen-xl w-full mx-auto p-content__padding flex flex-col mb-40">
         <h1 className="text-2xl font-bold mb-4">Post a Job</h1>
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Row gutter={16}>
             <Col xs={24} sm={8}>
               <Form.Item
@@ -174,8 +233,17 @@ const CreateJob = () => {
               >
                 <Select placeholder="Select work type">
                   <Select.Option value="Plumbing">Plumbing</Select.Option>
-                  <Select.Option value="Electrical">Electrical</Select.Option>
-                  <Select.Option value="Carpentry">Carpentry</Select.Option>
+                  <Select.Option value="Electrician">Electrician</Select.Option>
+                  <Select.Option value="Gardening">Gardening</Select.Option>
+                  <Select.Option value="Cleaning">Cleaning</Select.Option>
+                  <Select.Option value="Moving">Moving</Select.Option>
+                  <Select.Option value="Painting">Painting</Select.Option>
+                  <Select.Option value="Tutoring">Tutoring</Select.Option>
+                  <Select.Option value="Computer Repair">
+                    Computer Repair
+                  </Select.Option>
+                  <Select.Option value="Dog Walking">Dog Walking</Select.Option>
+                  <Select.Option value="Photography">Photography</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -205,7 +273,7 @@ const CreateJob = () => {
           </Row>
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-            <Form.Item
+              <Form.Item
                 label="Start Date"
                 name="startDate"
                 rules={[
@@ -219,9 +287,7 @@ const CreateJob = () => {
               <Form.Item
                 label="End Date"
                 name="endDate"
-                rules={[
-                  { required: true, message: "Please select End date" },
-                ]}
+                rules={[{ required: true, message: "Please select End date" }]}
               >
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
@@ -242,7 +308,7 @@ const CreateJob = () => {
             <Input.TextArea />
           </Form.Item>
           <Form.Item label="Image" name="image">
-            <Upload>
+            <Upload beforeUpload={handleImageUpload} >
               <Button icon={<UploadOutlined />}>Click to upload</Button>
             </Upload>
           </Form.Item>

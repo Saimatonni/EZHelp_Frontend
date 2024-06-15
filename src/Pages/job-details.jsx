@@ -13,44 +13,49 @@ import {
   Marker,
   useJsApiLoader,
 } from "@react-google-maps/api";
+import Cookies from "js-cookie";
+import {
+  notification
+} from "antd";
 
 const JobDetails = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [biddedServiceProviders, setBiddedServiceProviders] = useState([]);
+  const navigate = useNavigate();
 
+  const fetchJob = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/jobs/${id}`);
+      const result = await response.json();
+      if (response.ok) {
+        setJob(result.data);
+        setCoordinates({
+          lat: result.data.GPSCoordinates.latitude,
+          lng: result.data.GPSCoordinates.longitude,
+        });
+      } else {
+        console.error('Error fetching job:', result.message);
+      }
+    } catch (error) {
+      console.error('Error fetching job:', error);
+    }
+  };
+  const fetchBiddedServiceProviders = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/bibbed_sp/${id}`);
+      const result = await response.json();
+      if (response.ok) {
+        setBiddedServiceProviders(result.data);
+      } else {
+        console.error('Error fetching service providers:', result.message);
+      }
+    } catch (error) {
+      console.error('Error fetching service providers:', error);
+    }
+  };
   useEffect(() => {
-    const fetchJob = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/jobs/${id}`);
-        const result = await response.json();
-        if (response.ok) {
-          setJob(result.data);
-          setCoordinates({
-            lat: result.data.GPSCoordinates.latitude,
-            lng: result.data.GPSCoordinates.longitude,
-          });
-        } else {
-          console.error('Error fetching job:', result.message);
-        }
-      } catch (error) {
-        console.error('Error fetching job:', error);
-      }
-    };
-    const fetchBiddedServiceProviders = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/bibbed_sp/${id}`);
-        const result = await response.json();
-        if (response.ok) {
-          setBiddedServiceProviders(result.data);
-        } else {
-          console.error('Error fetching service providers:', result.message);
-        }
-      } catch (error) {
-        console.error('Error fetching service providers:', error);
-      }
-    };
 
     fetchJob();
     fetchBiddedServiceProviders();
@@ -91,6 +96,44 @@ const JobDetails = () => {
       return interval > 1 ? `${interval} minutes ago` : '1 minute ago';
     }
     return `${seconds} seconds ago`;
+  };
+
+  const handleBidNow = async () => {
+    const accessToken = Cookies.get("access_token");
+    const id2 = Cookies.get("userid");
+    if (!accessToken) {
+      navigate("/login-sp"); 
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/jobs/${id}/bid?sp_id=${id2}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "access-token": accessToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Bid placed successfully:", result);
+      fetchJob();
+      fetchBiddedServiceProviders();
+      notification.success({
+        message: "Bid Placed Successfully",
+        description: "Your bid has been successfully placed on this job.",
+      });
+    } catch (error) {
+      console.error("Failed to place bid:", error);
+      notification.error({
+        message: "Failed to Place Bid",
+        description: "Failed to place your bid. Please try again later.",
+      });
+    }
   };
 
   if (!job) {
@@ -155,7 +198,7 @@ const JobDetails = () => {
                 width: "120px",
                 marginLeft: "180px"
               }}
-              
+              onClick={handleBidNow}
             >
               Bid Now
             </Button>

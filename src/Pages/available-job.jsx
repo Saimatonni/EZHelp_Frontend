@@ -137,7 +137,7 @@ const AvailableJobs = () => {
                   </div>
                   <p className="mb-1">{job.shortTitle}</p>
                   <p className="font-bold">
-                    posted {timeSince(job.startDate)} by Amir Khan
+                    posted {timeSince(job.startDate)} Ago
                   </p>
                 </div>
               </Col>

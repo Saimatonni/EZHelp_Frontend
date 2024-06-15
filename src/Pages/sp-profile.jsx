@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dp from "../assets/images/dwight.jpg";
 import gradientbg from "../assets/images/banner/vector2.png";
 import '../styles/noushin.css';
@@ -10,12 +10,52 @@ import {
     Button,
   } from "reactstrap";
 
+import { BASE_URL } from "../utils/config";
+import { UploadOutlined } from "@ant-design/icons";
+import { Row, Col } from "reactstrap";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 const SPprofile = () => {
-  const initialValues = {
-    name: "Dwight Schrute",
-    email: "dwightschrute@hotmail.com",
-    phone_number: "55251525"
+  const [initialValues, setInitialValues] = useState([]);
+  const [imageBase64, setImageBase64] = useState("");
+  const [biddedJobs, setBiddedJobs] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchProfileDetails = async () => {
+    try {
+      const id = Cookies.get("userid");
+      const accessToken = Cookies.get("access_token");
+      const response = await fetch(`${BASE_URL}/service-providers/${id}`, {
+        headers: {
+          "access-token": accessToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const profileData = await response.json();
+      setInitialValues(profileData.data);
+    } catch (error) {
+      console.error("Failed to fetch profile details:", error);
+    }
   };
+
+  useEffect(() => {
+    fetchProfileDetails();
+  }, []);
+
+  const handleImageUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageBase64(reader.result.split(",")[1]);
+    };
+    reader.readAsDataURL(file);
+    return false;
+  };
+
 
   return (
     <div style={{ backgroundImage: `url(${gradientbg})` }}>
@@ -23,9 +63,9 @@ const SPprofile = () => {
         <div className="image-container" style={{ backgroundImage: `url(${gradientbg})` }}>
           <img src={dp} alt="Circular Image" className="circular-image" />
           <div className="text-ok">
-            <h6>DwightSchrute</h6>
-            <p>5 job posts last week</p>
-            <p>1 job posts today</p>
+          <h6>{initialValues.name}</h6>
+            <p>{initialValues.email}</p>
+            <p>{initialValues.phone_number}</p>
           </div>
         </div>
         <div className="text-container">
