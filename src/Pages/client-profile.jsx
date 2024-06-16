@@ -12,6 +12,7 @@ import { BASE_URL } from "../utils/config";
 import { UploadOutlined } from "@ant-design/icons";
 import { Row, Col } from "reactstrap";
 import { useNavigate } from "react-router-dom";
+import RatingPopup from "./RatingPopUp";
 
 const ClientProfile = () => {
   const [initialValues, setInitialValues] = useState([]);
@@ -20,6 +21,7 @@ const ClientProfile = () => {
   const navigate = useNavigate();
   const [showPostedJobs, setShowPostedJobs] = useState(true);
   const [assignedSPs, setAssignedSPs] = useState([]);
+  const [ratingPopupVisible, setRatingPopupVisible] = useState(false);
 
   const fetchProfileDetails = async () => {
     try {
@@ -67,7 +69,7 @@ const ClientProfile = () => {
     try {
       const id = Cookies.get("userid");
       const accessToken = Cookies.get("access_token");
-      const response = await fetch(`${BASE_URL}/assigned-sps/${id}`, {
+      const response = await fetch(`${BASE_URL}/assignments`, {
         headers: {
           "access-token": accessToken,
         },
@@ -78,11 +80,12 @@ const ClientProfile = () => {
       }
 
       const assignedSPsData = await response.json();
-      setAssignedSPs(assignedSPsData.data);
+      setAssignedSPs(assignedSPsData[0].provider_details);
     } catch (error) {
       console.error("Failed to fetch assigned service providers:", error);
     }
   };
+
 
   useEffect(() => {
     fetchProfileDetails();
@@ -171,11 +174,11 @@ const ClientProfile = () => {
           "access-token": accessToken,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       message.success("Job deleted successfully");
       fetchPostedJobs();
     } catch (error) {
@@ -183,24 +186,29 @@ const ClientProfile = () => {
       console.error("Failed to delete job:", error);
     }
   };
-  
+
   const handleToggleJobStatus = async (jobId, openStatus) => {
     try {
       const accessToken = Cookies.get("access_token");
-      const response = await fetch(`${BASE_URL}/jobs/${jobId}/update_open_status?open_status=${openStatus}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "access-token": accessToken,
-        },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        `${BASE_URL}/jobs/${jobId}/update_open_status?open_status=${openStatus}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "access-token": accessToken,
+          },
+          body: JSON.stringify({}),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const messageText = openStatus ? "Job opened successfully" : "Job closed successfully";
+      const messageText = openStatus
+        ? "Job opened successfully"
+        : "Job closed successfully";
       message.success(messageText);
       fetchPostedJobs();
     } catch (error) {
@@ -208,7 +216,10 @@ const ClientProfile = () => {
       console.error("Failed to update job status:", error);
     }
   };
-  
+
+  const handleRatingClick = () => {
+    setRatingPopupVisible(true);
+  };
 
   return (
     <div style={{ backgroundImage: `url(${gradientbg})` }}>
@@ -286,7 +297,7 @@ const ClientProfile = () => {
         </div>
       </div>
       <div className="list-container">
-        <div style={{ marginTop: "20px" , marginBottom: "38px"}}>
+        <div style={{ marginTop: "20px", marginBottom: "38px" }}>
           <Button
             color="primary"
             style={{ marginRight: "10px" }}
@@ -308,78 +319,143 @@ const ClientProfile = () => {
             {postedJobs.length > 0 ? (
               <div>
                 {postedJobs.map((job) => (
-  <Col key={job._id} sm="11" className="mb-4">
-    <div className="border rounded-md px-4 py-2">
-      <div className="flex justify-between">
-        <h1>{job.workType} Needed</h1>
-        <div>
-          <Button
-            style={{
-              backgroundColor: "#12002E",
-              height: "40px",
-              width: "80px",
-              marginRight: "10px",
-            }}
-            onClick={() => navigate(`/job-details/${job._id}`)}
-          >
-            View
-          </Button>
-          <Button
-            style={{
-              backgroundColor: "#FF4C4C",
-              height: "40px",
-              width: "80px",
-            }}
-            onClick={() => handleDeleteJob(job._id)}
-          >
-            Delete
-          </Button>
-          {job.open ? (
-            <Button
-              style={{
-                backgroundColor: "#00B74A",
-                height: "40px",
-                width: "80px",
-                marginLeft: "10px",
-              }}
-              onClick={() => handleToggleJobStatus(job._id, false)}
-            >
-              Close
-            </Button>
-          ) : (
-            <Button
-              style={{
-                backgroundColor: "#4287f5",
-                height: "40px",
-                width: "80px",
-                marginLeft: "10px",
-              }}
-              onClick={() => handleToggleJobStatus(job._id, true)}
-            >
-              Open
-            </Button>
-          )}
-        </div>
-      </div>
-      <div className="flex justify-between">
-        <p className="mb-1">{job.address}</p>
-        <p>{job.bidded_sp_ids.length} people bidded</p>
-      </div>
-      <p className="mb-1">{job.shortTitle}</p>
-      <p className="font-bold">posted {timeSince(job.startDate)}</p>
-    </div>
-  </Col>
-))}
-
+                  <Col key={job._id} sm="11" className="mb-4">
+                    <div className="border rounded-md px-4 py-2">
+                      <div className="flex justify-between">
+                        <h1>{job.workType} Needed</h1>
+                        <div>
+                          <Button
+                            style={{
+                              backgroundColor: "#12002E",
+                              height: "40px",
+                              width: "80px",
+                              marginRight: "10px",
+                            }}
+                            onClick={() => navigate(`/job-details/${job._id}`)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            style={{
+                              backgroundColor: "#FF4C4C",
+                              height: "40px",
+                              width: "80px",
+                            }}
+                            onClick={() => handleDeleteJob(job._id)}
+                          >
+                            Delete
+                          </Button>
+                          {job.open ? (
+                            <Button
+                              style={{
+                                backgroundColor: "#00B74A",
+                                height: "40px",
+                                width: "80px",
+                                marginLeft: "10px",
+                              }}
+                              onClick={() =>
+                                handleToggleJobStatus(job._id, false)
+                              }
+                            >
+                              Close
+                            </Button>
+                          ) : (
+                            <Button
+                              style={{
+                                backgroundColor: "#4287f5",
+                                height: "40px",
+                                width: "80px",
+                                marginLeft: "10px",
+                              }}
+                              onClick={() =>
+                                handleToggleJobStatus(job._id, true)
+                              }
+                            >
+                              Open
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="mb-1">{job.address}</p>
+                        <p>{job.bidded_sp_ids.length} people bidded</p>
+                      </div>
+                      <p className="mb-1">{job.shortTitle}</p>
+                      <p className="font-bold">
+                        posted {timeSince(job.startDate)}
+                      </p>
+                    </div>
+                  </Col>
+                ))}
               </div>
             ) : (
               <p>No jobs posted yet.</p>
             )}
           </div>
         ) : (
-          <div>hello</div>
+          <div className="border rounded-lg p-4">
+            
+              <div className="flex justify-between">
+                <div className="flex">
+                  <div className="text-center mb-4">
+                    <img
+                      src={assignedSPs.image}
+                      alt={assignedSPs.name}
+                      className="mx-auto h-20 w-20 rounded-full"
+                    />
+                  </div>
+                  <div className="ml-5">
+                    <h2 className="text-xl font-bold mb-1">{assignedSPs.name}</h2>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {assignedSPs.work_type}
+                    </p>
+                    <div className="flex mb-0">
+                      <Rating
+                        className="text-brand__font__size__sm text-black"
+                        readonly
+                        initialRating={assignedSPs.rating}
+                        emptySymbol={<AiOutlineStar />}
+                        fullSymbol={<AiFillStar />}
+                      />
+                      <p className="text-sm text-gray-600 ml-4">
+                        {assignedSPs.total_review_count} Reviews
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {assignedSPs.experience} years of Experience
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <p className="mt-2 text-lg font-bold">
+                    {assignedSPs.pay_per_hour} Taka/hour
+                  </p>
+                  <Button
+                    style={{
+                      backgroundColor: "#12002E",
+                      height: "40px",
+                      width: "120px",
+                      marginTop: "10px"
+                    }}
+                    onClick={handleRatingClick}
+                    // onClick={() => hireServiceProvider(assignedSPs._id)}
+                  >
+                    Give Rating
+                  </Button>
+                </div>
+              </div>
+            
+          </div>
         )}
       </div>
+      {ratingPopupVisible && (
+        <RatingPopup
+          providerId="666c52ec7f038633dcc3b464"
+          clientName={initialValues.name} 
+          clientImage={initialValues.image} 
+          onClose={() => setRatingPopupVisible(false)} 
+        />
+      )}
     </div>
   );
 };

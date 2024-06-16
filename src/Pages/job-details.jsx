@@ -136,6 +136,46 @@ const JobDetails = () => {
     }
   };
 
+  const hireServiceProvider = async (providerId) => {
+    const accessToken = Cookies.get("access_token");
+    if (!accessToken) {
+      navigate("/login-client");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/service-providers/assign-job/${id}/${providerId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "access-token": accessToken,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Service provider hired successfully:", result);
+      fetchJob();
+      fetchBiddedServiceProviders();
+      notification.success({
+        message: "Service Provider Hired",
+        description: "The service provider has been successfully hired.",
+      });
+    } catch (error) {
+      console.error("Failed to hire service provider:", error);
+      notification.error({
+        message: "Failed to Hire Service Provider",
+        description: "Failed to hire the service provider. Please try again later.",
+      });
+    }
+  };
+
   if (!job) {
     return <div>Loading...</div>;
   }
@@ -208,39 +248,58 @@ const JobDetails = () => {
           <h2 className="text-2xl font-bold">Bidded Service Providers</h2>
           {biddedServiceProviders.length > 0 ? (
             <div className="mt-4">
-              {biddedServiceProviders.map(sp => (
-                <div key={sp._id} className="border rounded-md p-4 mb-4">
-                  <div className="flex items-center">
+              {biddedServiceProviders.map((servicer) => (
+            <div key={servicer._id} className="border rounded-lg p-4">
+              <div className="flex justify-between">
+                <div className="flex">
+                  <div className="text-center mb-4">
                     <img
-                      src={sp.image}
-                      alt={sp.name}
-                      className="w-16 h-16 rounded-full mr-4"
+                      src={servicer.image}
+                      alt={servicer.name}
+                      className="mx-auto h-20 w-20 rounded-full"
                     />
-                     <div className="flex flex-col w-full">
-                    <h3 className="text-xl font-bold">{sp.name}</h3>
-                    <div className="flex justify-between">
-                      <p className="font-bold">{sp.work_type}</p>
-                      <h1 className="text-2xl font-bold">${sp.pay_per_hour}/hour</h1>
-                    </div>
-                    <p>{sp.experience} years Experience</p>
+                  </div>
+                  <div className="ml-5">
+                    <h2 className="text-xl font-bold mb-1">{servicer.name}</h2>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {servicer.work_type}
+                    </p>
                     <div className="flex mb-0">
                       <Rating
                         className="text-brand__font__size__sm text-black"
                         readonly
-                        initialRating={sp.rating}
+                        initialRating={servicer.rating}
                         emptySymbol={<AiOutlineStar />}
                         fullSymbol={<AiFillStar />}
                       />
                       <p className="text-sm text-gray-600 ml-4">
-                        {sp.total_review_count} Reviews
+                        {servicer.total_review_count} Reviews
                       </p>
                     </div>
-                    {/* <p>Email: {sp.email}</p>
-                    {/* <p>Phone: {sp.phone_number}</p> */}
-                  </div>
+                    <p className="text-sm text-gray-600">
+                      {servicer.experience} years of Experience
+                    </p>
                   </div>
                 </div>
-              ))}
+                <div>
+                  <p className="mt-2 text-lg font-bold">
+                    {servicer.pay_per_hour} Taka/hour
+                  </p>
+                  <Button
+                    style={{
+                      backgroundColor: "#12002E",
+                      height: "40px",
+                      width: "120px",
+                      marginTop: "10px"
+                    }}
+                    onClick={() => hireServiceProvider(servicer._id)}
+                  >
+                    Hire Me
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
             </div>
           ) : (
             <p>No bidding yet</p>
